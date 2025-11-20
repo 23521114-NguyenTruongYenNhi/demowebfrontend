@@ -36,6 +36,7 @@ async function apiRequest<T>(
     const config: RequestInit = {
         ...options,
         headers,
+        mode: 'cors', // Enable CORS mode
     };
 
     try {
@@ -48,6 +49,11 @@ async function apiRequest<T>(
 
         return await response.json();
     } catch (error) {
+        // Enhanced error handling
+        if (error instanceof TypeError && error.message.includes('fetch')) {
+            // Network error - backend likely not running
+            throw new Error('Cannot connect to server. Please make sure the backend is running.');
+        }
         if (error instanceof Error) {
             throw error;
         }
@@ -146,6 +152,48 @@ export const userAPI = {
 
     getCreatedRecipes: async (userId: string) => {
         return apiRequest(`/users/${userId}/recipes`);
+    },
+};
+
+// Admin API
+export const adminAPI = {
+    getRecipes: async (status?: 'pending' | 'approved' | 'rejected') => {
+        const query = status ? `?status=${status}` : '';
+        return apiRequest(`/admin/recipes${query}`);
+    },
+
+    approveRecipe: async (recipeId: string) => {
+        return apiRequest(`/admin/recipes/${recipeId}/approve`, {
+            method: 'POST',
+        });
+    },
+
+    rejectRecipe: async (recipeId: string) => {
+        return apiRequest(`/admin/recipes/${recipeId}/reject`, {
+            method: 'POST',
+        });
+    },
+
+    deleteRecipe: async (recipeId: string) => {
+        return apiRequest(`/admin/recipes/${recipeId}`, {
+            method: 'DELETE',
+        });
+    },
+
+    getUsers: async () => {
+        return apiRequest('/admin/users');
+    },
+
+    lockUser: async (userId: string) => {
+        return apiRequest(`/admin/users/${userId}/lock`, {
+            method: 'POST',
+        });
+    },
+
+    unlockUser: async (userId: string) => {
+        return apiRequest(`/admin/users/${userId}/unlock`, {
+            method: 'POST',
+        });
     },
 };
 
