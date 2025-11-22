@@ -19,11 +19,6 @@ export const Footer: React.FC = () => {
                             Discover delicious recipes based on ingredients you have.
                             Share your culinary creations and explore a world of flavors.
                         </p>
-                        <div className="flex items-center gap-2 text-gray-400">
-                            <span>Made with</span>
-                            <Heart className="w-4 h-4 text-red-500 fill-red-500" />
-                            <span>for food lovers</span>
-                        </div>
                     </div>
 
                     {/* Quick Links */}
